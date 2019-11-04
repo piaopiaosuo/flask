@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, url_for
 
 print(__name__)
 app = Flask(__name__)
@@ -13,21 +13,28 @@ USERS = {
 
 @app.route('/detail/<int:nid>', methods=['GET', ])
 def detail(nid):
+    if not session.get('user_info'):
+        url = url_for('li')
+        return redirect(url)
+        # return redirect('/login')
     return USERS[nid]
 
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    if not session.get('user_info'):
+        return redirect('/login')
     return USERS
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'], endpoint="li")
 def login():
     if request.method == "GET":
         return render_template('login.html')
     else:
         user = request.form.get('user')
         pwd = request.form.get('pwd')
+        session['user_info'] = 'alex'
         if user == 'alex' and pwd == "123":
             return redirect('/index')
         return render_template('login.html', error="用户名或密码错误")
