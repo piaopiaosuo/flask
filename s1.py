@@ -1,7 +1,19 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 
-print(__name__)
 app = Flask(__name__)
+
+# 直接写
+# app.debug = True
+# app.secret_key = "abcdefg"
+# app.config['DEBUG'] = False
+
+
+# 通过文件导入配置
+# app.config.from_pyfile('settings.py')
+
+# 通过object导入
+app.config.from_object("settings.DevelopmentConfig")
+print(app.config)
 
 USERS = {
     1: {'name': "加小心", 'age': 18, 'gender': '男',
