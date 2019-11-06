@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session, url_for, views
 
 app = Flask(__name__)
 
@@ -19,21 +19,24 @@ USERS = {
     1: {'name': "加小心", 'age': 18, 'gender': '男',
         'text': "程序员客栈中国非常领先的自由工作平台，为中高端程序员、产品经理和设计师等等互联网相关人员提供稳定的线上工作机会，包括自由工作、远程工作和兼职工作，还支持按需雇佣，工作模式非常多，感兴趣的推荐大家尝试一下。虽然名称叫程序员客栈，但是除了程序员，像产品经理，设计师等等互联网相关人员，都能在上面找到适合自己的项目。感兴趣的可以体验一下"},
     2: {'name': "王佳敏", 'age': 19, 'gender': '女',
-        "text": "开发邦，互联网软件外包服务平台，十年互联网软件技术开发经验，成功执行近百个项目，专业从事软件外包开发，软件定制开发，互联网系统开发，APP开发，微信开发，团队核心成员均具有十年以上软件互联网技术开发经验，毕业于工科名校，先后为华为公司、商汤科技、工信部中国软件评测中心、神州数码、深鉴科技、中软集团、中国万网、中石油吐哈气举中心"}
+        "text": "开发邦，互联网1软件外包服务平台，十年互联网软件技术开发经验，成功执行近百个项目，专业从事软件外包开发，软件定制开发，互联网系统开发，APP开发，微信开发，团队核心成员均具有十年以上软件互联网技术开发经验，毕业于工科名校，先后为华为公司、商汤科技、工信部中国软件评测中心、神州数码、深鉴科技、中软集团、中国万网、中石油吐哈气举中心"}
 }
 
 
 @app.route('/detail/<int:nid>', methods=['GET', ])
 def detail(nid):
-    if not session.get('user_info'):
-        url = url_for('li')
-        return redirect(url)
+    # if not session.get('user_info'):
+    #     url = url_for('li')
+    #     return redirect(url)
         # return redirect('/login')
     return USERS[nid]
 
 
-@app.route('/index', methods=['GET', 'POST'])
-def index():
+@app.route('/index', methods=['GET', 'POST'], defaults={'aaa': 123, 'bbb': 456}, strict_slashes=True,
+           redirect_to='http://www.baidu.com')
+def index(aaa, bbb):
+    print(aaa)
+    print(bbb)
     if not session.get('user_info'):
         return redirect('/login')
     return USERS
@@ -41,6 +44,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'], endpoint="li")
 def login():
+    print(url_for('index'))
     if request.method == "GET":
         return render_template('login.html')
     else:
@@ -52,6 +56,23 @@ def login():
         return render_template('login.html', error="用户名或密码错误")
     # return 'Hello World!'
 
+
+# app.add_url_rule('/login', 'li', login, methods=['GET', 'POST'])
+
+# print("login.__name__", login.__name__)
+
+
+class IndexView(views.MethodView):
+    methods = ['GET', 'POST']
+
+    def get(self):
+        return 'index.get'
+
+    def post(self):
+        return 'index.post'
+
+
+app.add_url_rule('/cbv-index', view_func=IndexView.as_view(name='cbv_index'))  # name = endpoint
 
 if __name__ == '__main__':
     app.run()

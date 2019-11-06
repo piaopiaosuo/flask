@@ -13,7 +13,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    ENV = 'DEV'
+    ENV = 'development'
 
 
 class TestingConfig(Config):
