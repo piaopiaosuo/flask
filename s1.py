@@ -34,10 +34,12 @@ def detail(nid):
 
 
 @app.route('/index', methods=['GET', 'POST'], defaults={'aaa': 123, 'bbb': 456}, strict_slashes=True,
-           redirect_to='http://www.baidu.com')
+           # redirect_to='http://www.baidu.com'
+           )
 def index(aaa, bbb):
     print(aaa)
     print(bbb)
+    app.logger.warning('A value for debugging')
     if not session.get('user_info'):
         return redirect('/login')
     return USERS
