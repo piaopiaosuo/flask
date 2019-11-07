@@ -14,6 +14,8 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     ENV = 'development'
+    # secret_key
+    SECRET_KEY = 'ABC'
 
 
 class TestingConfig(Config):

@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, session, url_for, views
+from flask import Flask, render_template, request, redirect, session, url_for, views, make_response
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -28,7 +29,7 @@ def detail(nid):
     # if not session.get('user_info'):
     #     url = url_for('li')
     #     return redirect(url)
-        # return redirect('/login')
+    # return redirect('/login')
     return USERS[nid]
 
 
@@ -44,7 +45,7 @@ def index(aaa, bbb):
 
 @app.route('/login', methods=['GET', 'POST'], endpoint="li")
 def login():
-    print(url_for('index'))
+    print(vars(request))
     if request.method == "GET":
         return render_template('login.html')
     else:
@@ -66,10 +67,32 @@ class IndexView(views.MethodView):
     methods = ['GET', 'POST']
 
     def get(self):
+        print(request)
         return 'index.get'
 
     def post(self):
         return 'index.post'
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['the_file']
+
+        print(f.filename)
+        print(secure_filename(f.filename))
+
+        f.save('./uploaded_file.png')
+        return "上传成功"
+
+
+@app.route('/set-cookie')
+def set_cookie():
+    resp = make_response("这是一个设置cookie")
+    # username = request.cookies.get('username')  # 读取cookie
+    # print(username)
+    resp.set_cookie('username', 'the username')  # 设置cookie
+    return resp
 
 
 app.add_url_rule('/cbv-index', view_func=IndexView.as_view(name='cbv_index'))  # name = endpoint
