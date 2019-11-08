@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, session, url_for, views, make_response
+from collections import namedtuple
+
+from flask import Flask, render_template, request, redirect, session, url_for, views, make_response, abort, jsonify
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -40,6 +42,7 @@ def index(aaa, bbb):
     print(aaa)
     print(bbb)
     app.logger.warning('A value for debugging')
+
     if not session.get('user_info'):
         return redirect('/login')
     return USERS
@@ -49,6 +52,15 @@ def index(aaa, bbb):
 def login():
     print(vars(request))
     if request.method == "GET":
+        # abort(404)
+        res = make_response({'data': 123}, 200)
+
+        # print('username' in session)
+        # session.pop('username', None)
+        # session['user'] = '123'
+        # res.status = 203
+        res.headers['X-Something'] = 'A value'
+        return res
         return render_template('login.html')
     else:
         user = request.form.get('user')
@@ -95,6 +107,30 @@ def set_cookie():
     # print(username)
     resp.set_cookie('username', 'the username')  # 设置cookie
     return resp
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('page_not_found.html'), 404
+
+
+User = namedtuple('User', ['username', 'theme', 'image'])
+
+
+@app.route("/me")
+def me_api():
+    user = User._make(['xiaoxin', 'blue, dark', 'haha'])
+    return {
+        "username": user.username,
+        "theme": user.theme,
+        "image": url_for("li", filename=user.image),
+    }
+
+
+@app.route("/users")
+def users_api():
+    users = [User._make(['xiaoxin', 'blue, dark', 'haha']), User._make(['xiaoxin1', 'blue, dark', 'haha1'])]
+    return jsonify([user for user in users])
 
 
 app.add_url_rule('/cbv-index', view_func=IndexView.as_view(name='cbv_index'))  # name = endpoint
