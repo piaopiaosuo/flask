@@ -3,22 +3,32 @@ import os
 from flask import Flask
 
 
-def create_app(test_config=None):
+def create_app(test_config=None, *args):
+    print(*args)
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    # app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, )
     app.config.from_mapping(
-        SECRET_KEY='abc',
-        DEBUG=True,
+    #     SECRET_KEY='abcd',
+    #     DEBUG=True,
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+    #     accesslog="log/access.log",
+    #     errorlog="log/debug.log",
+    #     loglevel="debug"
     )
-    print('123', test_config)
+
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
+        print(123)
+        # app.config.from_pyfile('config.py', silent=True)
+        app.config.from_object("config.ProductionConfig")
+        print(app.config)
+        print(567)
     else:
         # load the test config if passed in
-        app.config.from_mapping(test_config)
-
+        # app.config.from_mapping(test_config)
+        app.config.from_pyfile('config.py', silent=True)
+        # app.config.from_object("config.ProductionConfig")
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)

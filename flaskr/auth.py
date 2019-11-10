@@ -95,7 +95,7 @@ def login_required(view):
     """
     在其他视图中验证
     :param view:
-    :return:
+    :return:p
     """
 
     @functools.wraps(view)
